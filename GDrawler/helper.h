@@ -5,11 +5,11 @@
 #include <QFont>
 #include <QPen>
 #include <QWidget>
-#include "GParser/gparser.h"
+#include "GParser/GParser.h"
 
 const qreal SCALE_CHANGE = 1;
+const int DRAW_PRE_SCALE = 10000 / static_cast<int>(FLOAT_TO_INT_PERSITION);
 
-//! [0]
 class Helper
 {
 public:
@@ -28,6 +28,5 @@ private:
     qreal scale;
     QVector<GCode> codes;
 };
-//! [0]
 
 #endif

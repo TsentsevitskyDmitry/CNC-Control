@@ -6,7 +6,7 @@
 #include <QVector>
 #include <QFile>
 
-const float FLOAT_TO_INT_PERSITION = 10000.0;
+const float FLOAT_TO_INT_PERSITION = 1000.0;
 
 class GParser
 {

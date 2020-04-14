@@ -1,71 +1,57 @@
-/****************************************************************************
-**
-** Copyright (C) 2016 The Qt Company Ltd.
-** Contact: https://www.qt.io/licensing/
-**
-** This file is part of the examples of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:BSD$
-** Commercial License Usage
-** Licensees holding valid commercial Qt licenses may use this file in
-** accordance with the commercial license agreement provided with the
-** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and The Qt Company. For licensing terms
-** and conditions see https://www.qt.io/terms-conditions. For further
-** information use the contact form at https://www.qt.io/contact-us.
-**
-** BSD License Usage
-** Alternatively, you may use this file under the terms of the BSD license
-** as follows:
-**
-** "Redistribution and use in source and binary forms, with or without
-** modification, are permitted provided that the following conditions are
-** met:
-**   * Redistributions of source code must retain the above copyright
-**     notice, this list of conditions and the following disclaimer.
-**   * Redistributions in binary form must reproduce the above copyright
-**     notice, this list of conditions and the following disclaimer in
-**     the documentation and/or other materials provided with the
-**     distribution.
-**   * Neither the name of The Qt Company Ltd nor the names of its
-**     contributors may be used to endorse or promote products derived
-**     from this software without specific prior written permission.
-**
-**
-** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-** "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-** LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-** A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-** OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-** DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-** THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
-
-#include "helper.h"
+#include "GDrawler/helper.h"
 
 #include <QPainter>
 #include <QPaintEvent>
 #include <QWidget>
 #include <iostream>
 
+#include "GStreamer/GSerialStream/Serial.h"
+#include "GPacker/PacketCreator.h"
+
 //! [0]
 Helper::Helper()
 {
     background = QBrush(QColor(255, 255, 255));
-    scale = 20000000.0 / FLOAT_TO_INT_PERSITION;
+    scale = 20000000.0 / DRAW_PRE_SCALE / static_cast<int>(FLOAT_TO_INT_PERSITION);
     zeroPos = QPoint(300, 300);
 
     GParser parser("D:\\Projects\\HW\\Project_207b\\CNC_V1\\input.txt");
     parser.parse();
     parser.normalize();
     codes = parser.getCodes();
+
+    PacketCreator pac;
+    Serial ser;
+    ser.open("COM3", 9600);
+    ser.close();
+    ser.open("COM3", 9600);
+
+    std::cout<< "here1" << std::endl;
+    Sleep(1000);
+
+
+    int i = 0, c;
+    foreach (auto code, codes) {
+        GPacket p = pac.create(code);
+
+//        cout << p.xDist << " " << p.yDist << " " <<p.zDist << " " << p.xVel << " " << p.yVel << " " <<p.zVel <<  endl;
+//        if (i == 30) break;
+
+        ser << p;
+        string sss;
+        while(!(ser.try_read(sss))){
+            Sleep(100);
+            //cout << '.' << endl;
+        }
+
+        std::cout<< "out: " << i << " - " << sss << std::endl;
+        ++i;
+
+        Sleep(100);
+
+    }
+    cout << i << endl;
+
 }
 //! [0]
 
@@ -88,6 +74,7 @@ void Helper::paint(QPainter *painter, QPaintEvent *event, int elapsed)
 
     QPoint lastCoords = QPoint(0, 0);
     foreach (GCode code, codes) {
+        code *= DRAW_PRE_SCALE;
         QPoint newCoords(code.x / scale, - code.y / scale);
 
         if(code.opcode == 1 && code.mx == 1){

@@ -16,6 +16,8 @@ struct GCode
     bool mx;
     bool my;
     bool mz;
+
+    friend GCode& operator*=(GCode& self, const int num);
 };
 
 #endif

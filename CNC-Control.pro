@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui serialport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -29,14 +29,22 @@ SOURCES += \
     GDrawler/helper.cpp \
     main.cpp \
     window.cpp \
-    GParser/GParser.cpp
+    GParser/GParser.cpp \
+    GStreamer/GSerialStream/SerialAPI/serialapi.cpp \
+    GStreamer/GSerialStream/Serial.cpp \
+    GPacker/PacketCreator.cpp \
+    GParser/gcode.cpp
 
 HEADERS += \
     GDrawler/displaywidget.h \
     GDrawler/helper.h \
     window.h \
     GParser/GCode.h \
-    GParser/GParser.h
+    GParser/GParser.h \
+    GPacker/GPacket.h \
+    GPacker/PacketCreator.h \
+    GStreamer/GSerialStream/SerialAPI/serialapi.h \
+    GStreamer/GSerialStream/Serial.h
 
 FORMS += \
 
