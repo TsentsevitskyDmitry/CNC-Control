@@ -30,27 +30,27 @@ Helper::Helper()
     Sleep(1000);
 
 
-    int i = 0, c;
-    foreach (auto code, codes) {
-        GPacket p = pac.create(code);
+//    int i = 0, c;
+//    foreach (auto code, codes) {
+//        GPacket p = pac.create(code);
 
 //        cout << p.xDist << " " << p.yDist << " " <<p.zDist << " " << p.xVel << " " << p.yVel << " " <<p.zVel <<  endl;
 //        if (i == 30) break;
 
-        ser << p;
-        string sss;
-        while(!(ser.try_read(sss))){
-            Sleep(100);
-            //cout << '.' << endl;
-        }
+//        ser << p;
+//        string sss;
+//        while(!(ser.try_read(sss))){
+//            Sleep(100);
+//            //cout << '.' << endl;
+//        }
 
-        std::cout<< "out: " << i << " - " << sss << std::endl;
-        ++i;
+//        std::cout<< "out: " << i << " - " << sss << std::endl;
+//        ++i;
 
-        Sleep(100);
+//        Sleep(100);
 
-    }
-    cout << i << endl;
+//    }
+//    cout << i << endl;
 
 }
 //! [0]
@@ -107,10 +107,13 @@ qreal Helper::getScale()
 
 void Helper::changeScale(int change, QPoint relative)
 {
-    qreal oldScale = scale;
-    qreal newScale = scale - SCALE_CHANGE * change;
+    const qreal MIN_SCALE = 50.0;
 
-    if(newScale > 100) scale = newScale;
+    qreal dynamic_change = SCALE_CHANGE * scale / (MIN_SCALE * 20) ;
+    qreal newScale = scale - dynamic_change * change;
+
+    qreal oldScale = scale;
+    if(newScale > MIN_SCALE) scale = newScale;
 
     zeroPos = (zeroPos - relative) * (oldScale / scale) + relative;
 }

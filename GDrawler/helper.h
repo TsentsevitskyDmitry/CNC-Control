@@ -7,7 +7,7 @@
 #include <QWidget>
 #include "GParser/GParser.h"
 
-const qreal SCALE_CHANGE = 1;
+const qreal SCALE_CHANGE = 1.0;
 const int DRAW_PRE_SCALE = 10000 / static_cast<int>(FLOAT_TO_INT_PERSITION);
 
 class Helper

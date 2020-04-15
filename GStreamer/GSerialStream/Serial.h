@@ -11,6 +11,8 @@ private:
     SerialPort port;
 
 public:
+    ~Serial() {close(); }
+
     bool open(string port, int baud);
     void close();
 
